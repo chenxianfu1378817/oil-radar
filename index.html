@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国际原油观察站 · Crude Oil Radar</title>
+<meta name="description" content="国际原油行情与地缘形势综合分析面板：布伦特/WTI 走势、地缘风险因子、情景推演与关键观察指标">
+<style>
+:root{
+  --bg:#0b1220; --card:#111a2e; --card2:#0e1626; --line:#1e2a44;
+  --txt:#e8eef8; --sub:#93a4c0; --up:#2ecc71; --down:#ff5c5c; --warn:#ffb020;
+  --brent:#4da3ff; --wti:#ffa726; --accent:#4da3ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+header{padding:28px 0 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+h1{font-size:26px;letter-spacing:1px}
+h1 .en{color:var(--accent);font-size:15px;font-weight:400;margin-left:10px;letter-spacing:2px}
+.meta{color:var(--sub);font-size:13px}
+h2{font-size:19px;margin:36px 0 16px;padding-left:12px;border-left:4px solid var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.card .label{color:var(--sub);font-size:13px;margin-bottom:6px}
+.card .price{font-size:32px;font-weight:700;font-family:"SF Mono",Menlo,monospace}
+.card .chg{font-size:14px;font-weight:600;margin-left:8px}
+.card .extra{color:var(--sub);font-size:12.5px;margin-top:8px}
+.up{color:var(--up)} .down{color:var(--down)}
+.chart-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.legend{display:flex;gap:18px;font-size:13px;color:var(--sub);margin-bottom:8px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+#chart{width:100%;height:300px;display:block}
+#tip{position:absolute;pointer-events:none;background:#1a2540;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12.5px;display:none;z-index:5;white-space:nowrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.factor{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.factor .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.factor .name{font-weight:700;font-size:15px}
+.tag{font-size:12px;padding:2px 10px;border-radius:20px;font-weight:600}
+.tag.bull{background:rgba(46,204,113,.15);color:var(--up)}
+.tag.bear{background:rgba(255,92,92,.15);color:var(--down)}
+.tag.neutral{background:rgba(147,164,192,.15);color:var(--sub)}
+.factor p{color:var(--sub);font-size:13.5px}
+.weight{margin-top:10px;height:6px;background:var(--card2);border-radius:4px;overflow:hidden}
+.weight i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#7c6cff);border-radius:4px}
+.verdict{background:linear-gradient(135deg,#13213c,#101a30);border:1px solid #26406b;border-radius:14px;padding:20px 22px}
+.verdict .big{font-size:17px;font-weight:700;margin-bottom:10px}
+.verdict p{color:#c4d2e8;font-size:14px;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;font-size:13.5px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--card2);color:var(--sub);font-weight:600;font-size:12.5px}
+tr:last-child td{border-bottom:none}
+.prob{font-weight:700;color:var(--accent)}
+.levels{display:flex;gap:14px;flex-wrap:wrap}
+.level{flex:1;min-width:260px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.level h3{font-size:15px;margin-bottom:10px}
+.level ul{list-style:none}
+.level li{display:flex;justify-content:space-between;padding:5px 0;font-size:13.5px;color:var(--sub);border-bottom:1px dashed rgba(30,42,68,.6)}
+.level li:last-child{border-bottom:none}
+.level li b{color:var(--txt);font-family:Menlo,monospace;font-weight:600}
+.check{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.check .item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-size:13.5px;color:var(--sub)}
+.check .item b{color:var(--txt);display:block;margin-bottom:3px;font-size:14px}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);color:var(--sub);font-size:12.5px}
+footer p{margin-bottom:6px}
+.note{background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.3);color:#ffd699;border-radius:10px;padding:12px 16px;font-size:13px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>🛢️ 国际原油观察站<span class="en">CRUDE OIL RADAR</span></h1>
+  <div class="meta">数据更新：<span id="upd"></span> · 布伦特/WTI 主力连续合约</div>
+</header>
+
+<h2>实时行情</h2>
+<div class="cards" id="cards"></div>
+
+<h2>近 90 个交易日走势</h2>
+<div class="chart-box">
+  <div class="legend"><span><i style="background:var(--brent)"></i>布伦特原油 (Brent)</span><span><i style="background:var(--wti)"></i>WTI 纽约原油</span></div>
+  <div style="position:relative"><svg id="chart"></svg><div id="tip"></div></div>
+</div>
+
+<h2>综合研判</h2>
+<div class="verdict">
+  <div class="big">🎯 当前判断：布伦特高位震荡偏强，中枢 <span style="color:var(--brent)">111–113 美元</span>；方向取决于美伊冲突是否升级或和谈是否突破</div>
+  <p>▸ <b>支撑逻辑：</b>美伊冲突升级（伊朗击落美军无人机、油轮触雷）＋胡塞袭击沙特拉斯坦努拉炼厂＋霍尔木兹通行风险 → 地缘风险溢价居高不下；EIA 原油库存连续去化（单周 -146.2 万桶）强化近端紧张。</p>
+  <p>▸ <b>上行制约：</b>和谈窗口未完全关闭（万斯致信重启谈判、卡塔尔斡旋）＋美元走强与 12 月加息预期（约 85–90%）＋VLCC 运费近记录高位（约 37 美元/桶）压制炼厂利润、抑制追高。</p>
+  <p>▸ <b>策略含义：</b>偏多但忌追高，回调做多；Brent 1 月合约放量站稳 112 上行概率加大，和谈落地跌破 109 则趋势逆转。</p>
+</div>
+<div class="note">⚠️ 以下情景概率与点位为基于公开信息的分析框架推演，仅供研究参考，不构成任何投资建议。</div>
+
+<h2>情景推演（布伦特 1 月合约）</h2>
+<table>
+  <tr><th>情景</th><th>概率</th><th>价格区间</th><th>触发条件</th></tr>
+  <tr><td><b>冲突升级</b></td><td class="prob">35%</td><td class="up">$112 – 115</td><td>美军打击伊朗 / 胡塞扩大袭击 / 霍尔木兹通行恶化</td></tr>
+  <tr><td><b>僵局震荡</b></td><td class="prob">30%</td><td>$109 – 112</td><td>冲突与和谈博弈、EIA 库存持续去化支撑</td></tr>
+  <tr><td><b>和谈突破</b></td><td class="prob">20%</td><td class="down">$106 – 109</td><td>谈判落地 / 卡塔尔斡旋成功 / 霍尔木兹重开</td></tr>
+  <tr><td><b>宏观施压</b></td><td class="prob">15%</td><td class="down">$107 – 110</td><td>美元走强 + 需求下修 + SPR 释储</td></tr>
+</table>
+
+<h2>地缘与基本面因子</h2>
+<div class="grid2" id="factors"></div>
+
+<h2>关键技术位</h2>
+<div class="levels">
+  <div class="level"><h3 style="color:var(--brent)">布伦特 Brent</h3><ul>
+    <li><span>阻力 R2（冲突升级）</span><b>113 – 115</b></li>
+    <li><span>阻力 R1</span><b>112 – 113</b></li>
+    <li><span>支撑 S1</span><b>109 – 110</b></li>
+    <li><span>支撑 S2（破位）</span><b>107 – 109</b></li>
+  </ul></div>
+  <div class="level"><h3 style="color:var(--wti)">WTI 纽约原油</h3><ul>
+    <li><span>阻力 R2（布林上轨上方）</span><b>112.95 前高</b></li>
+    <li><span>阻力 R1（布林上轨）</span><b>105.55</b></li>
+    <li><span>支撑 S1</span><b>102 – 103</b></li>
+    <li><span>支撑 S2（心理关口）</span><b>100.00</b></li>
+  </ul></div>
+</div>
+
+<h2>关键观察指标</h2>
+<div class="check">
+  <div class="item"><b>① 霍尔木兹海峡通航</b>胡塞袭击频次与油轮通行状况，是地缘溢价能否延续的首要依据</div>
+  <div class="item"><b>② EIA 库存与炼厂开工率</b>连续去化验证近端紧张；若转为累库则削弱多头根基</div>
+  <div class="item"><b>③ 美元指数与美债收益率</b>美元走强对油价形成估值压制，突破 102.55 压力加大</div>
+  <div class="item"><b>④ OPEC+ 会议信号</b>11/1 会议产量政策与减产执行率；OPEC 已连续六次下调 2026 需求预期至 18 万桶/日</div>
+  <div class="item"><b>⑤ 布伦特-WTI 价差</b>当前约 8–9 美元，反映中东供应中断敏感度；走阔暗示海运风险升级</div>
+  <div class="item"><b>⑥ VLCC 运费与炼厂利润</b>运费近记录高位（约 37 美元/桶）压缩利润、抑制原油采购需求</div>
+</div>
+
+<footer>
+  <p><b>数据来源：</b>新浪财经全球期货行情接口（收盘价）；市场信息综合自公开财经媒体报道（汇通网、机构研报等），生成时间见页首。</p>
+  <p><b>免责声明：</b>本站为信息聚合与研究参考页面，所有分析判断基于生成时点的公开信息，行情数据存在延迟，不构成投资建议。原油期货杠杆属性强，风险自担。</p>
+</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = OIL_DATA, S = D.series;
+document.getElementById('upd').textContent = D.meta.updated;
+
+// ---- 价格卡片 ----
+function pct(a,b){return (a-b)/b*100}
+const cards = [
+  {name:'布伦特原油 BZ', val:D.meta.brent_last, prev:D.meta.brent_prev, color:'var(--brent)',
+   extra:`主力收盘 · 布-WT 价差 ${(D.meta.brent_last-D.meta.wti_last).toFixed(2)} 美元`},
+  {name:'WTI 纽约原油 CL', val:D.meta.wti_last, prev:D.meta.wti_prev, color:'var(--wti)',
+   extra:'NYMEX 主力收盘'},
+];
+document.getElementById('cards').innerHTML = cards.map(c=>{
+  const chg = c.val-c.prev, p = pct(c.val,c.prev), up = chg>=0;
+  const s30 = S.brent===S ? '' : '';
+  return `<div class="card"><div class="label">${c.name}</div>
+    <span class="price" style="color:${c.color}">${c.val.toFixed(2)}</span>
+    <span class="chg ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(chg).toFixed(2)} (${p>=0?'+':''}${p.toFixed(2)}%)</span>
+    <div class="extra">${c.extra}</div></div>`;
+}).join('');
+
+// ---- 因子面板 ----
+const factors = [
+  {n:'美伊冲突 / 霍尔木兹危机', t:'bull', w:9,
+   d:'伊朗击落美军无人机、多艘油轮触雷，特朗普公开威胁军事打击；霍尔木兹通行风险为布伦特注入约两位数的风险溢价。'},
+  {n:'胡塞武装袭击沙特设施', t:'bull', w:7,
+   d:'袭击沙特最大炼厂拉斯坦努拉（55 万桶/日）及能源基础设施，非霍尔木兹出口通道脆弱性暴露，供应中断风险从预期走向现实。'},
+  {n:'美伊和谈窗口', t:'bear', w:6,
+   d:'万斯致信重启谈判、卡塔尔提交斡旋草案；一旦落地，风险溢价快速回吐，是最主要的下行触发器。'},
+  {n:'库存去化 (EIA)', t:'bull', w:6,
+   d:'原油库存连续四周下降（单周 -146.2 万桶），商业库存仅略高于五年均值，缓冲垫薄弱；但汽油需求疲弱构成对冲。'},
+  {n:'美元与利率', t:'bear', w:5,
+   d:'美联储按兵不动但 12 月加息概率约 85–90%，美元约 102 上方压制以美元计价的大宗商品估值。'},
+  {n:'运费与炼厂利润', t:'bear', w:5,
+   d:'VLCC 运费近记录高位（约 37 美元/桶）+ 红海绕行成本，到岸成本上升压缩炼厂利润、抑制开工与采购，构成需求破坏反馈。'},
+];
+document.getElementById('factors').innerHTML = factors.map(f=>{
+  const tn = f.t==='bull'?'利多':(f.t==='bear'?'利空':'中性');
+  return `<div class="factor"><div class="head"><span class="name">${f.n}</span>
+    <span class="tag ${f.t}">${tn} · 权重 ${f.w}/10</span></div>
+    <p>${f.d}</p><div class="weight"><i style="width:${f.w*10}%"></i></div></div>`;
+}).join('');
+
+// ---- 90 日双线图 ----
+const svgNS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('chart'), tip=document.getElementById('tip');
+function draw(){
+  const W=svg.clientWidth||980, H=300, P={l:52,r:14,t:16,b:30};
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const n=S.brent.length;
+  let lo=Infinity,hi=-Infinity;
+  S.brent.forEach(x=>{lo=Math.min(lo,x.c);hi=Math.max(hi,x.c)});
+  S.wti.forEach(x=>{lo=Math.min(lo,x.c);hi=Math.max(hi,x.c)});
+  const pad=(hi-lo)*0.08; lo-=pad; hi+=pad;
+  const X=i=>P.l+(W-P.l-P.r)*i/(n-1), Y=v=>P.t+(H-P.t-P.b)*(1-(v-lo)/(hi-lo));
+  svg.innerHTML='';
+  // 网格与Y轴
+  for(let g=0;g<=4;g++){
+    const v=lo+(hi-lo)*g/4, y=Y(v);
+    const l=document.createElementNS(svgNS,'line');
+    l.setAttribute('x1',P.l);l.setAttribute('x2',W-P.r);l.setAttribute('y1',y);l.setAttribute('y2',y);
+    l.setAttribute('stroke','#1e2a44');l.setAttribute('stroke-dasharray','3 4');svg.appendChild(l);
+    const t=document.createElementNS(svgNS,'text');
+    t.setAttribute('x',P.l-8);t.setAttribute('y',y+4);t.setAttribute('fill','#5b6b88');
+    t.setAttribute('font-size','11');t.setAttribute('text-anchor','end');t.textContent=v.toFixed(0);
+    svg.appendChild(t);
+  }
+  // X轴日期
+  [0,Math.floor(n/2),n-1].forEach(i=>{
+    const t=document.createElementNS(svgNS,'text');
+    t.setAttribute('x',X(i));t.setAttribute('y',H-8);t.setAttribute('fill','#5b6b88');
+    t.setAttribute('font-size','11');t.setAttribute('text-anchor',i===0?'start':(i===n-1?'end':'middle'));
+    t.textContent=S.brent[i].d.slice(5);svg.appendChild(t);
+  });
+  function path(arr,color){
+    const d=arr.map((x,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(x.c).toFixed(1)}`).join('');
+    const p=document.createElementNS(svgNS,'path');
+    p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',color);
+    p.setAttribute('stroke-width','2.2');p.setAttribute('stroke-linejoin','round');
+    p.style.filter='drop-shadow(0 0 6px '+color+'44)';svg.appendChild(p);
+  }
+  path(S.brent,getComputedStyle(document.documentElement).getPropertyValue('--brent'));
+  path(S.wti,getComputedStyle(document.documentElement).getPropertyValue('--wti'));
+  // 交互层
+  const cross=document.createElementNS(svgNS,'line');
+  cross.setAttribute('y1',P.t);cross.setAttribute('y2',H-P.b);
+  cross.setAttribute('stroke','#3a4d75');cross.setAttribute('stroke-dasharray','4 3');cross.style.display='none';
+  svg.appendChild(cross);
+  svg.addEventListener('mousemove',e=>{
+    const r=svg.getBoundingClientRect();
+    const i=Math.round((e.clientX-r.left-P.l)/((W-P.l-P.r)/(n-1)));
+    if(i<0||i>=n){tip.style.display='none';cross.style.display='none';return}
+    cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.style.display='';
+    tip.style.display='block';
+    tip.innerHTML=`<b>${S.brent[i].d}</b><br><span style="color:var(--brent)">Brent ${S.brent[i].c.toFixed(2)}</span><br><span style="color:var(--wti)">WTI ${S.wti[i].c.toFixed(2)}</span><br><span style="color:#93a4c0">价差 ${(S.brent[i].c-S.wti[i].c).toFixed(2)}</span>`;
+    const tx=Math.min(e.clientX-r.left+16, W-170);
+    tip.style.left=tx+'px'; tip.style.top='24px';
+  });
+  svg.addEventListener('mouseleave',()=>{tip.style.display='none';cross.style.display='none'});
+}
+window.addEventListener('resize',draw);draw();
+</script>
+</body>
+</html>
